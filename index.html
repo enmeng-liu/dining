@@ -25,8 +25,6 @@ class: center, middle
 
 # 卫宫家今天的饭
 
-刘恩萌 171860013
-
 <s>饱受OJ折磨的我决定以德报怨给大家出道水题</s>
 
 ---
@@ -37,7 +35,7 @@ POJ 3281 Dining
 
 [openjudge传送门](http://bailian.openjudge.cn/practice/3479/)
 
-.right[![Right-aligned image](emiya.jpg)]
+.right[![Right-aligned image](static/image/emiya.jpg)]
 
 
 ---
@@ -52,6 +50,8 @@ POJ 3281 Dining
 + 每种食物，每种饮料只能被一位客人吃/喝
 
 *********
+
+--
 
 可以看成两个二分图最大匹配问题
 
@@ -68,6 +68,8 @@ POJ 3281 Dining
   + 将每个客人结点拆分为两个
   
 ********
+
+--
 
 + 源点s-食物-客人1-客人2-饮料-汇点
 + 存图：数据规模小，用邻接矩阵较为方便，用邻接链表可能会翻车
@@ -86,10 +88,11 @@ POJ 3281 Dining
 
 # EK板子
 
+<img src = "static/image/ff.png" height = 300>
 
 + <s>容量c[N][N]，流量f[N][N]</s>
 + 只需要一个记录当前残存容量的数组map[N][N]
-+ 随便搜一下就能找到
++ 百度随便搜一下就能找到
 
 ---
 
@@ -122,10 +125,8 @@ int edmonds_karp() {
 int bfs(){
     memset(pre, -1, sizeof(pre));
     int minc = 1e9;
-
     queue <int> q;
     q.push(s);
-
     while(!q.empty()){
         int u = q.front();
         q.pop();
@@ -140,7 +141,6 @@ int bfs(){
             }
         }
     }
-
     if(pre[t] == -1) return -1;
     else return minc;
 }
@@ -152,7 +152,9 @@ int bfs(){
 
 代码不贴惹，自己写吧:)
 
-Tips:
+--
+
+### Tips:
 为了将各种不同类型的所有点都囊括在一个数组里的同时，增强代码的可读性，可以使用宏定义
 
 ```C
@@ -167,7 +169,11 @@ Tips:
 ---
 class: center, middle
 
-# THANK YOU!
+# 鸣谢
+
++ 两位验题人
++ jyy和oxf的remark.js模板
++ Fancy小姐姐的技术援助
 
 </textarea>
 
