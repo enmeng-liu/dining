@@ -13,7 +13,7 @@
 <link rel="stylesheet" href="static/css/slides.css"/>
 
 
-    <title>卫宫家今天的饭</title>
+    <title>HKUST pre</title>
   </Head>
   <body>
    
@@ -23,164 +23,180 @@ public: true
 
 class: center, middle
 
-# 卫宫家今天的饭
+# Presentation for HKUST Project
 
-<s>饱受OJ折磨的我决定以德报怨给大家出道水题</s>
+Presentor: Enmeng Liu
 
----
+### Group Members
+   + Yi Xie
+   + Enmeng Liu
+   + Bingkun Huang
+   + Wei He
 
-# 题源
-
-POJ 3281 Dining 
-
-[openjudge传送门](http://bailian.openjudge.cn/practice/3479/)
-
-.right[![Right-aligned image](static/image/emiya.jpg)]
-
+2019/2/20 @ HKUST
 
 ---
 
-# 题目描述
+# Task Understanding
 
-基本只是把原题搬到了月球上
++ Predict the **running time** of SGDclassifier
++ With parameters assigned different values
+---
 
-.red[出题人的锅：题面1.0表述不精确，现在改掉了]
-
-+ N位客人，F种食物，D种饮料
-+ 每位客人有多种喜欢的事物和饮料
-+ 每位客人只吃一种食物、只喝一种饮料
-+ 每种食物，每种饮料只能被一位客人吃/喝
-
-*********
+# How?
 
 --
 
-可以看成两个二分图最大匹配问题
-
-人-食物-饮料 一一一对应
-
-
----
-
-# 构建流网络
-
-+ 先尝试：食物-客人-饮料 
-  + 会出现一位客人对应多份食物或饮料的情况
-  + 客人结点需要加上结点容量
-  + 将每个客人结点拆分为两个
-  
-********
++ Black box: Regression
 
 --
 
-+ 源点s-食物-客人1-客人2-饮料-汇点
-+ 存图：数据规模小，用邻接矩阵较为方便
-
----
-
-# 最大流算法
-
-+ 数据规模[1,100]
-+ EK完全OK
-+ 没有刻意生成卡任何算法的数据，也许可以尝试暴力
-+ 板子写起来有丶难度
-+ 代码虽然我贴了，但是务必自己写一遍！
++ Theory of SGDclassifier
 
 --
 
-+ 也可以掏出你的Dinic板子
-.center[![Right-aligned image](static/image/yabi.png)]
+<img src="static/image/ref.png" height=350>
 
 ---
 
-# EK板子
+## SGDclassifier
 
-<img src = "static/image/ff.png" height = 300>
-
-+ <s>容量c[N][N]，流量f[N][N]</s>
-+ 只需要一个记录当前残存容量的数组map[N][N]
-+ 百度随便搜一下就能找到
++ An iterative method for optimizing a differentiable objective function(可微分目标函数的一种迭代优化方法)
++ A stochastic approximation of gradient descent optimization(梯度下降优化的一种随机逼近方法)
++ To find the minimum of the cost function
 
 ---
 
-## 板子代码
-
-```C++
-int edmonds_karp() {
-    int ans = 0;
-    int minc;
-    while((minc = bfs()) != -1) { //bfs找到一条增广路径
-        ans += minc;    //加上这条增广路径的流量
-        int tt = t,pt;  
-        while(tt != s) {
-            pt = pre[tt];
-            map[pt][tt] -= minc;
-            map[tt][pt] += minc;
-            tt = pt;
-        }   //修改这条增广路径上的边的残存容量
-    }
-    return ans;
-}
-```
-
-
----
-
-## bfs寻找增广路径
-
-```C++
-int bfs(){
-    memset(pre, -1, sizeof(pre));
-    int minc = 1e9;
-    queue <int> q;
-    q.push(s);
-    while(!q.empty()){
-        int u = q.front();
-        q.pop();
-        if(u == t) break;
-        for(int i = 1; i <= t; ++i) {
-            if(pre[i] == -1 && map[u][i]) {
-                minc = min(minc, map[u][i]);
-                //更新当前路径的最小残存容量
-                q.push(i);
-                pre[i] = u; 
-                //pre数组用于记录bfs找到的增广路径
-            }
-        }
-    }
-    if(pre[t] == -1) return -1;
-    else return minc;
-}
-```
-	
----
-
-## 建图
-
-代码不贴惹，自己写吧:)
-
---
-
-### Tips:
-为了将各种不同类型的所有点都囊括在一个数组里的同时，增强代码的可读性，可以使用宏定义
-
-```C
-#define FOOD(x) **我**
-#define GUEST1(x) **是**
-#define GUEST2(x) **马**
-#define DRINK(x) **赛**
-#define s **克**
-#define t **!**
-```
-
----
 class: center, middle
 
-# 鸣谢
+# Data Preprocessing
 
-+ 两位验题人
-+ jyy和oxf的remark.js模板
-+ Fancy小姐姐的技术援助
+## Filter parameters(RTFM) 
+
+---
+
+## Model-related Parameters
+
+.right-column[
+- .green[`penalty`:choice of penalty function]
+- .green[`l1 _ratio`:the proportion of l1 and l2 in ElasticNet penalty]
+- `alpha`: Constant of the regularization term
+- `max_iter`: the max number of times of iteration
+- <s>`random_state`: the seed of random number</s>
+- .green{n_jobs`: number of CPU used}
+]
+
+---
+
+# Modifications
+
++ `penalty` and `l1_ratio`
+
+|penalty|l1_ratio|l2_ratio|
+|:-:|:-:|:-:|
+|None|0|0|
+|l1|1|0|
+|l2|0|1|
+|ElasticNet|l1_ratio|1-l1_ratio|
+
++ `random_state`: change -1 to 16
+
+---
+
+# Data Preprocessing
+
+## Data-related Parameters
+
+.right-column[
++ `n_samples`
++ `n_features`
++ `n_classes`
++ `n_clusters`
++ `n_informative`
++ `flip_y`: the number of y's flipped
++ <s>`scale`: A value to multiply the features</s>
+]
+
+---
+
+# Choose Model
+
+### Frequently-used Regression Models
+
++ Linear Regression
++ k-NearestNeighbours
++ Support Vector Machine
++ Decision Tree
++ ...
+
+---
+
+# Choose Model
+
+### Frequently-used Regression Models
+
++ Linear Regression
++ k-NearestNeighbours
++ Support Vector Machine
++ .red[Decision Tree]
++ ...
+
+---
+
+# Decision Tree
+
+<img src = "static/image/DecisionTree.png">
+
+---
+
+# Polish up
+
++ CART alg: for regrssion
++ leaf node: .green[value → linear model]
+--
+
++ model tree
+
+---
+
+class: center, middle
+
+# Code Demo
+
+---
+
+```python
+# Choose model
+model = linear_regr()
+
+# Build model tree
+model_tree = ModelTree(model, max_depth=5, min_samples_leaf=3,
+                       search_type="greedy", n_search_grid=100)
+```                      
+
+---
+
+# Result
+
+<img src = "static/image/final30.png" width = 700>
+
+<img src = "static/image/final70.png" width = 700>
+
++ Generalization
+
+---
+
+# Gain
+
++ Basic theories of ML
++ Ways to adjust parameters
++ Experience of <s>Gambling</s> Competing
+
+---
+
+class: middle, center
+
+# THANK YOU!
 
 </textarea>
 
