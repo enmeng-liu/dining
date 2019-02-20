@@ -173,7 +173,15 @@ model = linear_regr()
 model_tree = ModelTree(model, max_depth=5, min_samples_leaf=3,
                        search_type="greedy", n_search_grid=100)
 ```                      
+***** 
+### Parameters Adjustment
 
++ tree genarate
+  + `max_depth`:4-5
+  + `min_samples_leaf`: 10↑↓
+  + `search_type`: greedy/grid/adaptive
++ linear model
+  + not big impact
 ---
 
 # Result
